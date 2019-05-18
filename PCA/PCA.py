@@ -92,11 +92,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-'''
-https://www.kaggle.com/lalitharajesh/iris-dataset-exploratory-data-analysis
-https://blog.csdn.net/Eddy_zheng/article/details/48713449
-https://blog.csdn.net/weixin_39750084/article/details/81952008
-https://blog.csdn.net/wanglingli95/article/details/78887771
-https://zhuanlan.zhihu.com/p/23636308
-'''
