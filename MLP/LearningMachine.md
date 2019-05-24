@@ -4,10 +4,13 @@
 
 对于一个手写数字数据集：
 
-1. 用无噪声数据训练LM1
-2. 将训练好的LM1设置为另一个LM2的初始化，并训练LM2，其中数据集被加上高斯噪声污染
-3. 分别测试LM1和LM2，噪声数据在某些范围内变化
-4. 绘制识别误差百分比曲线相对于LM1和LM2的噪声水平
+1.  用无噪声数据训练LM1
+
+2.  将训练好的LM1设置为另一个LM2的初始化，并训练LM2，其中数据集被加上高斯噪声污染
+
+3.  分别测试LM1和LM2，噪声数据在某些范围内变化
+
+4.  绘制识别误差百分比曲线相对于LM1和LM2的噪声水平
 
 ### 二、分析及设计
 
@@ -15,7 +18,7 @@
 
    数据集是一个(47535, 16 x 8)的数据，意味着一共有47535条数据，每一条数据有16 x 8个特征。进一步分析，每一条数据的第一列属性是字母，后面全部是数字0、1，不难想到这其实是一个形状为(16, 8)的矩阵被展成一长串，在原来矩阵中，1代表这个坐标有像素值，否则就没有像素值。这样，就可以通过坐标以及是否有像素值表示一个字母。
 
-   我们将读入的数据分为```data_train```, ```target_train```, ```data_test```, ```target_test```, 以便于后续训练时处理。
+   我们将读入的数据分为`data_train`, `target_train`, `data_test`, `target_test`, 以便于后续训练时处理。
 
 2. **对于一个输入Sigma，计算误差**
 
@@ -25,13 +28,13 @@
 
 4. **关于多层感知机(MLP)**
 
-   多层感知机（MLP，Multilayer Perceptron）也叫人工神经网络（ANN，Artificial Neural Network），除了输入输出层，它中间可以有多个隐层，最简单的MLP只含一个隐层，即三层的结构，如下图![img](https://img-blog.csdn.net/20150128033221168?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMjE2MjYxMw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+   多层感知机（MLP，Multilayer Perceptron）也叫人工神经网络（ANN，Artificial Neural Network），除了输入输出层，它中间可以有多个隐层，最简单的MLP只含一个隐层，即三层的结构，如下图![MLP](http://upload-images.jianshu.io/upload_images/3323312-f70dbb47dda9a35d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240) 
 
    从上图可以看到，多层感知机层与层之间是全连接的（全连接的意思就是：上一层的任何一个神经元与下一层的所有神经元都有连接）。多层感知机最底层是输入层，中间是隐藏层，最后是输出层。
 
 ### 三、详细实现
 
-1. **读入数据**
+1.  **读入数据**
 
 ```python
 def load_data(file_path, n):
@@ -61,7 +64,7 @@ def load_data(file_path, n):
     return data_train, target_train, data_test, target_test
 ```
 
-2. **加入高斯噪声**
+2.  **加入高斯噪声**
 
 ```python
 def add_gauss_noise(datas, sigma):
@@ -76,9 +79,9 @@ def add_gauss_noise(datas, sigma):
     return np.array(noise_datas)  # 返回加入噪声的数据集
 ```
 
-3. **训练模型**
+3.  **训练模型**
 
-* 没有噪声
+*   没有噪声
 
 ```python
 def train_model(data_train, target_train):
@@ -96,10 +99,9 @@ def train_model(data_train, target_train):
                   metrics=['accuracy'])  # 衡量标准为正确率
     model.fit(data_train, target_train, epochs=2)  # 开始拟合，训练次数为5
     return model  # 返回模型
-
 ```
 
-* 有噪声
+*   有噪声
 
 ```python
 def train_model_with_noise(data_train, target_train, noise_data_train):
@@ -111,10 +113,9 @@ def train_model_with_noise(data_train, target_train, noise_data_train):
     model = train_model(noise_data_train, target_train)  # 调用训练函数进行训练
     model.fit(data_train, target_train, epochs=2)  # 使用无噪声训练集再次拟合
     return model  # 返回模型
-
 ```
 
-4. **评估模型**
+4.  **评估模型**
 
 ```python
 def evaluate_model(model, data_test, target_test):
@@ -131,11 +132,14 @@ def evaluate_model(model, data_test, target_test):
 
 图片中横轴为Sigma的方差，纵轴为accuracy
 
-不适用交叉验证的结果：![Figure_1](E:\File\学校和班级\班级\大三下\机器学习\Task\Figure_1.png)
-
-使用10路交叉验证的结果：![Figure_2](E:\File\学校和班级\班级\大三下\机器学习\Task\Figure_2.png)
+不适用交叉验证的结果：![no cross-validation](https://upload-images.jianshu.io/upload_images/3323312-d0d1f8de189bc9d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+使用10路交叉验证的结果：![cross-validation](https://upload-images.jianshu.io/upload_images/3323312-6acea74d5fadc6ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ### 五、心得体会
 
-1. 随着噪声方差的增加，accuracy的值逐渐减小
-2. 经过噪声数据训练的模型对于加入噪声的数据拟合效果更好
+1.  随着噪声方差的增加，accuracy的值逐渐减小
+
+2.  经过噪声数据训练的模型对于加入噪声的数据拟合效果更好
+------
+[GitHub代码]([https://github.com/GarfieldCCC/AI_algorithm_Learning/tree/master/MLP](https://github.com/GarfieldCCC/AI_algorithm_Learning/tree/master/MLP)
+)
