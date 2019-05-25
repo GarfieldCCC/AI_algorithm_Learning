@@ -114,9 +114,9 @@ def plot(data, n):
 
 ### 四、实验结果
 
-![PCA and LDA](D:\Figure_1.png)
+![PCA and LDA](Figure_1.png)
 
-![KPCA with different Kernel](D:\Figure_2.png)
+![KPCA with different Kernel](Figure_2.png)
 
 ### 五、心得体会
 
